@@ -1,12 +1,5 @@
-**Test123**
-
-```
-This is some sample code
-```
-
-``
-https://raw.githubusercontent.com/Antonlovesdnb/Antonlovesdnb.github.io/master/BlogPost1/script.ps1
-``
-
-![Screenshot](https://raw.githubusercontent.com/Antonlovesdnb/Antonlovesdnb.github.io/master/BlogPost1/ettoatjson.png)
+**Blog Post Index**
+# 1. Blog Post 1
+# 2. Blog Post 2
+# 3. Blog Post 3
 
