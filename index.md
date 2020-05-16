@@ -1,4 +1,3 @@
-# Welcome to the Blog
 1. [First Blog Post](#first)
 2. [Second Blog Post](#second)
 3. [Third Blog Post](#third)
