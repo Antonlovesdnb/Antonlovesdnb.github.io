@@ -1,9 +1,12 @@
-# Table of Contents
--------------------
+# Welcome to the Blog
 1. [First Blog Post](#first)
 2. [Second Blog Post](#second)
 3. [Third Blog Post](#third)
 4. [Fourth Blog Post](#fourth)
+
+---
+
+## First Blog Post<a name="first"></a>
 
 Example Screenshot:
 
@@ -43,5 +46,18 @@ namespace HelloWorld
   }
 }
 ```
+---
 
-## First Blog Post<a name="first"></a>
+## Second Blog Post<a name="second"></a>
+
+1. List
+2. Of
+3. Shit
+
+_Table Example_
+
+Column A | Column B | Column C
+---------|----------|---------
+ A1 | B1 | C1
+ A2 | B2 | C2
+ A3 | B3 | C3
