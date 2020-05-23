@@ -146,8 +146,8 @@ A few things stand out as abnormal using this technique, using the data we have 
 
 I used this [Clement Labro's](https://twitter.com/itm4n) implementation of RunPE in my testing, you can grab it [here](https://github.com/itm4n/VBA-RunPE) and read more about it here: 
 
-* https://itm4n.github.io/vba-runpe-part1/
-* https://itm4n.github.io/vba-runpe-part2/
+* <https://itm4n.github.io/vba-runpe-part1/>
+* <https://itm4n.github.io/vba-runpe-part2/>
 
 Clement describes the technique succinctly:
 
@@ -158,14 +158,22 @@ Clement describes the technique succinctly:
  ```xml
 <RuleGroup name="" groupRelation="or">
     <ProcessAccess onmatch="include">
-		<Rule groupRelation="and" name="Office Injection via VBA">
-			<SourceImage condition="begin with">C:\Program Files (x86)\Microsoft Office\Root\Office16\</SourceImage>
-			<CallTrace condition="contains">\Microsoft Shared\VBA</CallTrace>
-	    </Rule>
-</ProcessAccess>
+        <Rule groupRelation="and" name="Office Injection via VBA">
+            <SourceImage condition="begin with">C:\Program Files (x86)\Microsoft Office\Root\Office16\</SourceImage>
+            <CallTrace condition="contains">\Microsoft Shared\VBA</CallTrace>
+        </Rule>
+    </ProcessAccess>
+</RuleGroup>
  ```
 
 Taking a look at the data this produces, we see Word injecting into Word via VBA: 
 
 ![](2020-05-23-15-37-17.png)
+
+Putting the pieces together a little bit, we're starting to get a good idea of what our Office Processes are doing, we can see:
+
+* WMI ImageLoads by Office Processes
+* VBA ImageLoads by Office Processes
+* Office Injections via VBA
+* COM use by Office Processes
 
