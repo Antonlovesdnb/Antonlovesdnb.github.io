@@ -35,7 +35,7 @@ index=sysmon EventCode=1 Image=*Excel*
 ```
 Which gives us these results: 
 
-![](2020-05-23-12-53-49.png)
+![](2020-05-23-12-53-49.png | width=100)
 
 Not very interesting, the typical "Excel has Spawned PowerShell or a Command Prompt" detection has failed here, as these macros use techniques which circumvent this particular detection (More details about this are in the Red Canary Blog post linked above) 
 
@@ -97,3 +97,9 @@ Again if we observe Excel behaviour when launching normally versus launching a m
 	<ImageLoaded condition="is">C:\Windows\SysWOW64\wbem\wbemdisp.dll</ImageLoaded>
 </Rule>
 ```
+This rule will fire when the wbemdisp.dll is loaded by any executable within the Office16 folder, it can be tuned to be more specific as well. 
+
+Here's what the data looks like in Splunk:
+
+![](2020-05-23-14-00-00.png)
+
