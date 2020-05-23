@@ -44,15 +44,15 @@ If we observe Excel behaviour through something like Procmon, we can see that it
 Let's enhance our Sysmon config a little bit with the following:
 
 ```xml
-	<RuleGroup name="" groupRelation="or">
-		<ImageLoad onmatch="include">
-			<Rule name="Macro Image Load" groupRelation="or">
-				<ImageLoaded condition="end with">VBE7INTL.DLL</ImageLoaded>
-				<ImageLoaded condition="end with">VBE7.DLL</ImageLoaded>
-				<ImageLoaded condition="end with">VBEUI.DLL</ImageLoaded>
-			</Rule>
-		</ImageLoad>
-	</RuleGroup>
+<RuleGroup name="" groupRelation="or">
+	<ImageLoad onmatch="include">
+		<Rule name="Macro Image Load" groupRelation="or">
+			<ImageLoaded condition="end with">VBE7INTL.DLL</ImageLoaded>
+			<ImageLoaded condition="end with">VBE7.DLL</ImageLoaded>
+			<ImageLoaded condition="end with">VBEUI.DLL</ImageLoaded>
+		</Rule>
+	</ImageLoad>
+</RuleGroup>
 ```
 
 With this logic, we should see an event when any of the above DLLs are loaded. 
@@ -94,7 +94,7 @@ Again if we observe Excel behaviour when launching normally versus launching a m
 ```xml
 <Rule groupRelation="and" name="Office WMI Image Load">
     <Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
-	<ImageLoaded condition="is">C:\Windows\SysWOW64\wbem\wbemdisp.dll</ImageLoaded>
+    <ImageLoaded condition="is">C:\Windows\SysWOW64\wbem\wbemdisp.dll</ImageLoaded>
 </Rule>
 ```
 This rule will fire when the wbemdisp.dll is loaded by any executable within the Office16 folder, it can be tuned to be more specific as well. 
@@ -107,17 +107,17 @@ Now let's take a look at the Red Canary tests number 4 and 5 - Shell and ShellBr
 
 ```xml
 <Rule groupRelation="and" name="Office COM Image Load - Combase">
-				<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
-				<ImageLoaded condition="is">C:\Windows\SysWOW64\combase.dll</ImageLoaded>
-			</Rule>
-			<Rule groupRelation="and" name="Office COM Image Load - coml2">
-				<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
-				<ImageLoaded condition="is">C:\Windows\SysWOW64\coml2.dll</ImageLoaded>
-			</Rule>
-			<Rule groupRelation="and" name="Office COM Image Load - comsvc">
-				<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
-				<ImageLoaded condition="is">C:\Windows\SysWOW64\comsvcs.dll</ImageLoaded>
-			</Rule>
+    <Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+	<ImageLoaded condition="is">C:\Windows\SysWOW64\combase.dll</ImageLoaded>
+</Rule>
+<Rule groupRelation="and" name="Office COM Image Load - coml2">
+	<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+	<ImageLoaded condition="is">C:\Windows\SysWOW64\coml2.dll</ImageLoaded>
+</Rule>
+<Rule groupRelation="and" name="Office COM Image Load - comsvc">
+	<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+	<ImageLoaded condition="is">C:\Windows\SysWOW64\comsvcs.dll</ImageLoaded>
+</Rule>
 ```
 Firing up our macros again and looking at the following Splunk query: 
 
@@ -131,4 +131,13 @@ We can see Excel loading the Macro as well as COM DLLs:
 
 Now we know that Excel launched some kind of macro, and used COM, neat!
 
+### Excel 4 Macros
 
+[Outflank](https://www.outflank.nl/) publishes tons of next-level macro techniques regularly, let's take a look at the [following](https://github.com/outflanknl/Scripts/blob/master/ShellcodeToJScript.js) script which is a Proof of Concept which uses Excel 4 Macros to load Shellcode via JScript.
+
+A few things stand out as abnormal using this technique, using the data we have already in our Sysmon config, we can see: 
+
+* Excel Loading a COM DLL
+* Excel being launched from a non-standard directory
+
+![](2020-05-23-15-04-43.png)
