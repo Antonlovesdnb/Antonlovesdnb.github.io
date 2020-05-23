@@ -103,3 +103,32 @@ Here's what the data looks like in Splunk:
 
 ![](2020-05-23-14-00-00.png)
 
+Now let's take a look at the Red Canary tests number 4 and 5 - Shell and ShellBrowserWindow. These two methods interact with COM, so we can configure our Sysmon Config as follows: 
+
+```xml
+<Rule groupRelation="and" name="Office COM Image Load - Combase">
+				<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+				<ImageLoaded condition="is">C:\Windows\SysWOW64\combase.dll</ImageLoaded>
+			</Rule>
+			<Rule groupRelation="and" name="Office COM Image Load - coml2">
+				<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+				<ImageLoaded condition="is">C:\Windows\SysWOW64\coml2.dll</ImageLoaded>
+			</Rule>
+			<Rule groupRelation="and" name="Office COM Image Load - comsvc">
+				<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+				<ImageLoaded condition="is">C:\Windows\SysWOW64\comsvcs.dll</ImageLoaded>
+			</Rule>
+```
+Firing up our macros again and looking at the following Splunk query: 
+
+```sql
+index=sysmon Image=*Excel*
+| stats values(ImageLoaded) by Image,RuleName
+```
+We can see Excel loading the Macro as well as COM DLLs:
+
+![](2020-05-23-14-48-53.png)
+
+Now we know that Excel launched some kind of macro, and used COM, neat!
+
+
