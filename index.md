@@ -70,7 +70,7 @@ Gives us these results:
 
 Now we know that a macro was executed by Excel which is a great start. As mentioned earlier, these macro tests break typical process hierarchy detections, so searching for what spawned out of Excel directly is not going to work in this case. 
 
-All we know so far from a detection standpoint is that Excel executed some kind of macro, but we don't know what the macro did or whether it was malicious or not. We can, however, pivot off the data point that we do have and group our events by time to see what was launched around the time that the Excel macro was executed. 
+All we know so far from a detection standpoint is that Excel executed some kind of macro, but we don't know what the macro did or whether it was malicious or not. We can, however, pivot off the data point that we _do_ have and group our events by time to see what was launched around the time that the Excel macro was executed. 
 
 ```sql 
 index=sysmon 
@@ -82,3 +82,18 @@ We group our events into buckets of 5 second time intervals - my thinking here i
 ![](2020-05-23-13-31-04.png)
 
 We caught some false positives in our little dragnet, but also found the 'malicious' commands executed by our macro.
+
+Continuing with the Red Canary macro tests, let's look at option 2 in the tests: _Chain Reaction Download and execute with Excel, wmiprvse_
+
+Using the same time bucketing technique, we can see the execution of wmiprvse.exe around the time that an Excel macro was launched: 
+
+![](2020-05-23-13-52-16.png)
+
+Again if we observe Excel behaviour when launching normally versus launching a macro that loads wmiprvse.exe, we can see the wbemdisp.dll being loaded, so let's add that to our Sysmon config as well: 
+
+```xml
+<Rule groupRelation="and" name="Office WMI Image Load">
+    <Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+	<ImageLoaded condition="is">C:\Windows\SysWOW64\wbem\wbemdisp.dll</ImageLoaded>
+</Rule>
+```
