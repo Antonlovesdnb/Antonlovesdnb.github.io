@@ -141,3 +141,18 @@ A few things stand out as abnormal using this technique, using the data we have 
 * Excel being launched from a non-standard directory
 
 ![](2020-05-23-15-04-43.png)
+
+### RunPE
+
+I used this [Clement Labro's](https://twitter.com/itm4n) implementation of RunPE in my testing, you can grab it [here](https://github.com/itm4n/VBA-RunPE) and read more about it here: 
+
+* https://itm4n.github.io/vba-runpe-part1/
+* https://itm4n.github.io/vba-runpe-part2/
+
+Clement describes the technique succinctly:
+
+ >[RunPE] consists in running code inside the memory of a legit process in order to hide its actual activity.
+
+ 
+
+
