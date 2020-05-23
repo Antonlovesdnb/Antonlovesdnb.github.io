@@ -1,11 +1,14 @@
-1. [First Blog Post](#first)
-2. [Second Blog Post](#second)
-3. [Third Blog Post](#third)
-4. [Fourth Blog Post](#fourth)
-
+1. [Hunting Malicious Macros](#first)
 ---
 
-## First Blog Post<a name="first"></a>
+## Hunting Malicious Macros<a name="first"></a>
+
+Taking a look at the MITRE ATT&CK page for malicious macros, it's clear that this technique is a favourite among APT groups. Microsoft Office is ubiquitous in a corporate office setting and presents defenders with a very large attack surface. 
+
+"Just disable macros" is a great idea, but many critical business processes run on the back of decades-old macros, for better or for worse.
+
+```https://attack.mitre.org/beta/techniques/T1566/001/```
+
 
 Example Screenshot:
 
