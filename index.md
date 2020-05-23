@@ -21,3 +21,16 @@ Red Canary have done the defensive world a huge solid and have provided a script
 
 * [Script Used](https://github.com/redcanaryco/atomic-red-team/blob/master/ARTifacts/Initial_Access/generate-macro.ps1)
 
+We generate our macro, which outputs an Excel file: 
+
+![](2020-05-23-12-49-17.png)
+
+Now let's take a look at what Sysmon shows us, using the base [Swiftonsecurity Config](https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml)
+
+Let's use this basic Splunk Query: 
+
+```sql
+index=sysmon EventCode=1 Image=*Excel*
+| table Image,ParentImage,CommandLine
+```
+
