@@ -34,9 +34,9 @@ index=sysmon EventCode=1 Image=*Excel*
 | table Image,ParentImage,CommandLine
 ```
 Which gives us these results: 
-
-![](2020-05-23-12-53-49.png){:class="img-responsive"}
-
+<div style="width:150px; height:100px">
+![](2020-05-23-12-53-49.png)
+</div>
 Not very interesting, the typical "Excel has Spawned PowerShell or a Command Prompt" detection has failed here, as these macros use techniques which circumvent this particular detection (More details about this are in the Red Canary Blog post linked above) 
 
 If we observe Excel behaviour through something like Procmon, we can see that it loads specific DLLs when a macro is loaded. We can configure Sysmon to look for this type of behaviour.
