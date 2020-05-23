@@ -177,3 +177,6 @@ Putting the pieces together a little bit, we're starting to get a good idea of w
 * Office Injections via VBA
 * COM use by Office Processes
 
+### Evil Clippy
+
+### Putting it together - Covenant
