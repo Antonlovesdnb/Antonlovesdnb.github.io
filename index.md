@@ -35,7 +35,7 @@ index=sysmon EventCode=1 Image=*Excel*
 ```
 Which gives us these results: 
 
-![](2020-05-23-12-53-49.png | width=100)
+![](2020-05-23-12-53-49.png){:height="36px" width="36px"}.
 
 Not very interesting, the typical "Excel has Spawned PowerShell or a Command Prompt" detection has failed here, as these macros use techniques which circumvent this particular detection (More details about this are in the Red Canary Blog post linked above) 
 
