@@ -153,6 +153,19 @@ Clement describes the technique succinctly:
 
  >[RunPE] consists in running code inside the memory of a legit process in order to hide its actual activity.
 
- 
+ To my simpleton brain, if I hear "inside the memory of a legit process" I think of injection, so let's configure our Sysmon config to look for this, with the following snippet: 
 
+ ```xml
+<RuleGroup name="" groupRelation="or">
+    <ProcessAccess onmatch="include">
+		<Rule groupRelation="and" name="Office Injection via VBA">
+			<SourceImage condition="begin with">C:\Program Files (x86)\Microsoft Office\Root\Office16\</SourceImage>
+			<CallTrace condition="contains">\Microsoft Shared\VBA</CallTrace>
+	    </Rule>
+</ProcessAccess>
+ ```
+
+Taking a look at the data this produces, we see Word injecting into Word via VBA: 
+
+![](2020-05-23-15-37-17.png)
 
