@@ -33,4 +33,52 @@ Let's use this basic Splunk Query:
 index=sysmon EventCode=1 Image=*Excel*
 | table Image,ParentImage,CommandLine
 ```
+Which gives us these results: 
 
+![](2020-05-23-12-53-49.png)
+
+Not very interesting, the typical "Excel has Spawned PowerShell or a Command Prompt" detection has failed here, as these macros use techniques which circumvent this particular detection (More details about this are in the Red Canary Blog post linked above) 
+
+If we observe Excel behaviour through something like Procmon, we can see that it loads specific DLLs when a macro is loaded. We can configure Sysmon to look for this type of behaviour.
+
+Let's enhance our Sysmon config a little bit with the following:
+
+```xml
+	<RuleGroup name="" groupRelation="or">
+		<ImageLoad onmatch="include">
+			<Rule name="Macro Image Load" groupRelation="or">
+				<ImageLoaded condition="end with">VBE7INTL.DLL</ImageLoaded>
+				<ImageLoaded condition="end with">VBE7.DLL</ImageLoaded>
+				<ImageLoaded condition="end with">VBEUI.DLL</ImageLoaded>
+			</Rule>
+		</ImageLoad>
+	</RuleGroup>
+```
+
+With this logic, we should see an event when any of the above DLLs are loaded. 
+
+The following Splunk Query: 
+
+```sql
+index=sysmon RuleName="Macro Image Load"
+| stats values(ImageLoaded) by Image
+```
+
+Gives us these results: 
+
+![](2020-05-23-13-01-46.png)
+
+Now we know that a macro was executed by Excel which is a great start. As mentioned earlier, these macro tests break typical process hierarchy detections, so searching for what spawned out of Excel directly is not going to work in this case. 
+
+All we know so far from a detection standpoint is that Excel executed some kind of macro, but we don't know what the macro did or whether it was malicious or not. We can, however, pivot off the data point that we do have and group our events by time to see what was launched around the time that the Excel macro was executed. 
+
+```sql 
+index=sysmon 
+| bin span=5s _time
+| stats values(RuleName),values(Image),values(CommandLine) by _time
+```
+We group our events into buckets of 5 second time intervals - my thinking here is the malicious processes executed via the macro may not spawn directly from Excel, but they would be grouped together tightly by time. Let's take a look at the results: 
+
+![](2020-05-23-13-31-04.png)
+
+We caught some false positives in our little dragnet, but also found the 'malicious' commands executed by our macro.
