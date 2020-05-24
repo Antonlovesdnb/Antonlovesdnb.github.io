@@ -27,21 +27,21 @@ We generate our macro, which outputs an Excel file:
 
 ![](2020-05-23-12-49-17.png)
 
-Now let's take a look at what Sysmon shows us, using the base [SwiftOnSecurity Config](https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml)
+Now let's take a look at what Sysmon shows us when this macro is executed, using the [SwiftOnSecurity Config](https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml)
 
-Let's use this basic Splunk Query: 
+Using this basic Splunk Query: 
 
 ```sql
 index=sysmon EventCode=1 Image=*Excel*
 | table Image,ParentImage,CommandLine
 ```
-Which gives us these results: 
+Gives us these results: 
 
 ![](2020-05-23-12-53-49.png)
 
 Not very interesting, the typical "Excel has Spawned PowerShell or a Command Prompt" detection has failed here, as these macros use techniques which circumvent this particular detection (More details about this are in the Red Canary Blog post linked above) 
 
-If we observe Excel behaviour through something like Procmon, we can see that it loads specific DLLs when a macro is loaded. We can configure Sysmon to look for this type of behaviour.
+If we observe Excel behaviour through something like Procmon, we can see that Excel loads specific DLLs when a macro is loaded. We can configure Sysmon to look for this type of behaviour.
 
 Let's enhance our Sysmon config a little bit with the following:
 
@@ -59,14 +59,14 @@ Let's enhance our Sysmon config a little bit with the following:
 
 With this logic, we should see an event when any of the above DLLs are loaded. 
 
-The following Splunk Query: 
+After updating the Sysmon config and running the macro again, we can now do something like:
 
 ```sql
 index=sysmon RuleName="Macro Image Load"
 | stats values(ImageLoaded) by Image
 ```
 
-Gives us these results: 
+Which gives us these results: 
 
 ![](2020-05-23-13-01-46.png)
 
@@ -91,7 +91,7 @@ Using the same time bucketing technique, we can see the execution of wmiprvse.ex
 
 ![](2020-05-23-13-52-16.png)
 
-Again if we observe Excel behaviour when launching normally versus launching a macro that loads wmiprvse.exe, we can see the wbemdisp.dll being loaded, so let's add that to our Sysmon config as well: 
+If we observe Excel behaviour when launching normally versus launching a macro that loads wmiprvse.exe, we can see the wbemdisp.dll being loaded, so let's add that to our Sysmon config as well: 
 
 ```xml
 <Rule groupRelation="and" name="Office WMI Image Load">
