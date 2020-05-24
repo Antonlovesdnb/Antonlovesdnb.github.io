@@ -179,4 +179,56 @@ Putting the pieces together a little bit, we're starting to get a good idea of w
 
 ### Evil Clippy
 
+EvilClippy is a tool created by Outflank that provides functionality to stomp VBA code and hide macros from the Office GUI, you can grab the tool here: 
+
+https://github.com/outflanknl/EvilClippy
+
+And read more about VBA Stomping here: 
+
+https://vbastomp.com/
+
+I want to keep things super simple so I'm using the following "real" VBA code: 
+
+```vba
+Sub AutoOpen()
+	Call Shell("powershell.exe", vbNormalFocus)
+End Sub
+```
+
+To launch a PowerShell Window when I open up my Word doc, but I'm using EvilClippy to 'stomp' the document with the following VBA Code:
+
+```vba
+Sub AutoOpen()
+	Call Shell("calc.exe", vbNormalFocus)
+End Sub
+```
+This is what my document looks like, the VBA code is telling me the macro will launch calc, but when I Enable Content, the document will launch PowerShell instead, sneaky!
+
+Fake Macro Code: 
+
+![](2020-05-24-08-54-53.png)
+
+
+What the document actually does: 
+
+![](2020-05-24-08-56-25.png)
+
+While Sysmon can't detect VBA Stomping specifically, our current Sysmon config gives us a bunch of clues that a macro was executed and that our Word document executed PowerShell.
+
+Looking at the following Splunk query: 
+
+```sql
+index=sysmon EventCode=10
+| table SourceImage,TargetImage,RuleName
+```
+
+We can see our earlier injection Sysmon config snippet being put to work: 
+
+![](2020-05-24-09-05-35.png)
+
+
 ### Putting it together - Covenant
+
+<https://3xpl01tc0d3r.blogspot.com/2020/02/gadgettojscript-covenant-donut.html>
+
+<https://github.com/cobbr/Covenant>
