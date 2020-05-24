@@ -294,3 +294,25 @@ We can also see the output of any Trust Record modifications for further evidenc
 ![](2020-05-24-11-36-24.png)
 
 The folks at Outflank made a nice post about trust records [here](https://outflank.nl/blog/2018/01/16/hunting-for-evil-detect-macros-being-executed/) including providing a Sysmon config snippet to monitor for this kind of activity in real-time, how awesome! 
+
+### Closing Notes
+
+My aim with this post was to provide some detection ideas for an attack vector that is commonly utilized by real-world malware and attackers. The Sysmon configuration snippets, Splunk queries and Sigma rules will undoubtedly generate false positives in a real corporate environment and are not a silver bullet for detecting malicious attacker activity via macros. I'm sure there are bypasses available and used for this stuff, but you have to start somewhere and at least make attackers work for a foothold in your environment.
+
+### More Credits
+
+These resources / people helped me put this post together in one way or another: 
+
+* [https://twitter.com/decalage2](https://twitter.com/decalage2)
+* [https://github.com/decalage2/oletools/wiki/olevba](https://github.com/decalage2/oletools/wiki/olevba)
+* [https://twitter.com/DissectMalware](https://twitter.com/DissectMalware)
+* [http://www.decalage.info/](http://www.decalage.info/)
+* [https://twitter.com/DidierStevens](https://twitter.com/DidierStevens)
+* [http://didierstevens.com/](http://didierstevens.com/)
+* [https://twitter.com/OrOneEqualsOne](https://twitter.com/OrOneEqualsOne)
+* [https://posts.specterops.io/capability-abstraction-fbeaeeb26384
+](https://posts.specterops.io/capability-abstraction-fbeaeeb26384)
+* [https://twitter.com/cyb3rops
+](https://twitter.com/cyb3rops)
+* [https://twitter.com/Cyb3rWard0g](https://twitter.com/Cyb3rWard0g)
+* [https://github.com/hunters-forge](https://github.com/hunters-forge)
