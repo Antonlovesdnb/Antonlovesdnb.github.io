@@ -9,7 +9,7 @@ Taking a look at the MITRE ATT&CK page for malicious macros, it's clear that thi
 
 To get a sense of how widely malicious macros are utilized, take a look at the technique via MITRE: [T1566.001](https://attack.mitre.org/beta/techniques/T1566/001/)
 
-In this post I hope to cover detection techniques that provide relatively robust coverage for detecting malicious macros in your own environment. I'll be using Sysmon and a combination of Windows logs in combination with Splunk, although I will provide Sigma rules when possible. I'll also be providing the Sysmon config snippets I used to get the data required. 
+In this post I will cover detection techniques that provide relatively robust coverage for detecting malicious macros in your own environment. I'll be using Sysmon to generate the log data and Splunk to query that data, I'll also highlight a few Sigma rules that can help with Macro detections. 
 
 Before I dive in, I need to acknowledge that this work **definitely** stands on the shoulders of giants and I'll be referencing their work throughout. 
 
@@ -21,11 +21,13 @@ Red Canary have done the defensive world a huge solid and have provided a script
 
 * [Script Used](https://github.com/redcanaryco/atomic-red-team/blob/master/ARTifacts/Initial_Access/generate-macro.ps1)
 
+`Note: Originally these macro tests download other scripts from the Red Canary repo to do other things with the macro, for the purposes of my testing, however, I only wanted to test the original macro execution so I modified these scripts slightly to just call out to Google instead of running the full blown tests. `
+
 We generate our macro, which outputs an Excel file: 
 
 ![](2020-05-23-12-49-17.png)
 
-Now let's take a look at what Sysmon shows us, using the base [Swiftonsecurity Config](https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml)
+Now let's take a look at what Sysmon shows us, using the base [SwiftOnSecurity Config](https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml)
 
 Let's use this basic Splunk Query: 
 
@@ -144,7 +146,7 @@ A few things stand out as abnormal using this technique, using the data we have 
 
 ### RunPE
 
-I used this [Clement Labro's](https://twitter.com/itm4n) implementation of RunPE in my testing, you can grab it [here](https://github.com/itm4n/VBA-RunPE) and read more about it here: 
+I used  [Clement Labro's](https://twitter.com/itm4n) implementation of RunPE in my testing, you can grab it [here](https://github.com/itm4n/VBA-RunPE) and read more about it here: 
 
 * <https://itm4n.github.io/vba-runpe-part1/>
 * <https://itm4n.github.io/vba-runpe-part2/>
@@ -153,7 +155,7 @@ Clement describes the technique succinctly:
 
  >[RunPE] consists in running code inside the memory of a legit process in order to hide its actual activity.
 
- To my simpleton brain, if I hear "inside the memory of a legit process" I think of injection, so let's configure our Sysmon config to look for this, with the following snippet: 
+ To my simpleton brain, if I hear "_inside the memory of a legit process_" I think of injection, so let's configure our Sysmon config to look for this, with the following snippet: 
 
  ```xml
 <RuleGroup name="" groupRelation="or">
@@ -229,6 +231,66 @@ We can see our earlier injection Sysmon config snippet being put to work:
 
 ### Putting it together - Covenant
 
-<https://3xpl01tc0d3r.blogspot.com/2020/02/gadgettojscript-covenant-donut.html>
+Thus far we've looked at isolated techniques, but how well does our Sysmon configuration work for a macro that launches a Covenant stager - let's find out. 
 
-<https://github.com/cobbr/Covenant>
+Covenant is available here: <https://github.com/cobbr/Covenant> - thank you [Ryan](https://twitter.com/cobbr_io)!
+
+And I am using the following post to generate my Macro: <https://3xpl01tc0d3r.blogspot.com/2020/02/gadgettojscript-covenant-donut.html>
+
+With everything in place, we can start our Word document and confirm that we see the callback in Covenant: 
+
+![](2020-05-24-09-58-25.png)
+
+Checking our logs, we see that the VBA Images were loaded, so we know a macro ran, but not much else, there's no processes spawned from Word since everything happens in memory. How can we enhance our detections further? 
+
+We know that Covenant is a .NET framework, so we can assume that it needs to loads some type of .NET DLLs at startup. Let's add the following to our Sysmon config: 
+
+```xml
+<Rule groupRelation="and" name="Office .NET Abuse: Assembly DLLs">
+	<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+	<ImageLoaded condition="begin with">C:\Windows\assembly\</ImageLoaded>
+</Rule>
+<Rule groupRelation="and" name="Office .NET Abuse: GAC">
+	<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+	<ImageLoaded condition="begin with">C:\Windows\Microsoft.NET\assembly\GAC_MSIL</ImageLoaded>
+</Rule>
+<Rule groupRelation="and" name="Office .NET Abuse: CLR">
+	<Image condition="begin with">C:\Program Files (x86)\Microsoft Office\root\Office16\</Image>
+	<ImageLoaded condition="end with">clr.dll</ImageLoaded>
+</Rule>
+```
+Let's run our macro again and check the logs with the following query: 
+
+```xml
+index=sysmon EventCode=7
+| stats values(ImageLoaded) by Image,RuleName
+```
+![](2020-05-24-10-06-11.png)
+
+Now you know that a macro was executed and that the Office process executing the macro loaded the DLLs necessary for some kind of .NET functionality, a great jumping off point for further investigation. 
+
+Check out the [Sigma Repo](https://github.com/Neo23x0/sigma/tree/master/rules/windows/sysmon) where I contributed a few rules looking for this kind of activity, we can use [uncoder.io](https://uncoder.io/) to convert the Sigma rule into a Splunk query: 
+
+![](2020-05-24-11-46-54.png)
+
+We could also convert Sigma rules to Splunk searches programmatically with [this](https://github.com/P4T12ICK/Sigma2SplunkAlert) awesome project by [Patrick Bareiss](https://twitter.com/bareiss_patrick)
+
+### Bonus Round - [Velociraptor](https://github.com/Velocidex)
+
+Now that your cool new macro alerts have fired, you'd probably want to take a closer look at the host, let's try that with Velociraptor, we find our host, and collect some macro artifacts: 
+
+![](2020-05-24-11-31-09.png)
+
+Now we take a look at the results, and we can see that not only did Velociraptor find our macros, but it also ripped them open, revealing the actual VBA code: 
+
+![](2020-05-24-11-34-04.png)
+
+While this output is great, our VBA stomped macro keeps it's secrets :) 
+
+![](2020-05-24-11-39-39.png)
+
+We can also see the output of any Trust Record modifications for further evidence of macro execution:
+
+![](2020-05-24-11-36-24.png)
+
+The folks at Outflank made a nice post about trust records [here](https://outflank.nl/blog/2018/01/16/hunting-for-evil-detect-macros-being-executed/) including providing a Sysmon config snippet to monitor for this kind of activity in real-time, how awesome! 
