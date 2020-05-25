@@ -81,7 +81,7 @@ index=sysmon
 ```
 We group our events into buckets of 5 second time intervals - my thinking here is the malicious processes executed via the macro may not spawn directly from Excel, but they would be grouped together tightly by time.
 
-In this query, I am not querying for a specific event type, I just want to see all Sysmon events grouped into time buckets, and then I want to take a lookk at the events surrounding the "Macro Image Load" rule name.
+In this query, I am not querying for a specific event type, I just want to see all Sysmon events grouped into time buckets, and then I want to take a look at the events surrounding the "Macro Image Load" rule name.
 
 Let's take a look at the results:
 
