@@ -3,7 +3,9 @@
 
 ## Hunting Malicious Macros<a name="first"></a>
 
-Taking a look at the MITRE ATT&CK page for malicious macros, it's clear that this technique is a favourite among APT groups. Microsoft Office is indeed ubiquitous in a corporate office setting and presents defenders with a very large attack surface.
+Taking a look at the MITRE ATT&CK page for malicious macros, it's clear that this technique is a favourite among APT groups.
+
+Microsoft Office is indeed ubiquitous in a corporate office setting and presents defenders with a very large attack surface.
 
 "_Just disable macros_" is a great idea, but many critical business processes run on the back of decades-old macros; for better or for worse.
 
@@ -139,7 +141,7 @@ Now we know that Excel launched some kind of macro, and used COM, neat!
 
 ### Excel 4 Macros
 
-[Outflank](https://www.outflank.nl/) publishes tons of next-level macro techniques regularly, let's take a look at the [following](https://github.com/outflanknl/Scripts/blob/master/ShellcodeToJScript.js) script which is a Proof of Concept which uses Excel 4 Macros to load Shellcode via JScript.
+[Outflank](https://www.outflank.nl/) publishes tons of next-level macro techniques regularly, let's take a look at the [following](https://github.com/outflanknl/Scripts/blob/master/ShellcodeToJScript.js) script which is a Proof of Concept which uses COM to generated an Excel 4 Macro to load Shellcode via JScript.
 
 A few things stand out as abnormal using this technique, using the data we have already in our Sysmon config, we can see:
 
@@ -239,7 +241,7 @@ Thus far we've looked at isolated techniques, but how well does our Sysmon confi
 
 Covenant is available here: <https://github.com/cobbr/Covenant> - thank you [Ryan](https://twitter.com/cobbr_io)!
 
-And I am using the following post to generate my Macro: <https://3xpl01tc0d3r.blogspot.com/2020/02/gadgettojscript-covenant-donut.html>
+And I am using the following post to generate my Macro: <https://3xpl01tc0d3r.blogspot.com/2020/02/gadgettojscript-covenant-donut.html> - Thank you [Chirag](https://twitter.com/chiragsavla94)!
 
 With everything in place, we can start our Word document and confirm that we see the callback in Covenant:
 
@@ -247,7 +249,9 @@ With everything in place, we can start our Word document and confirm that we see
 
 Checking our logs, we see that the VBA Images were loaded, so we know a macro ran, but not much else, there's no processes spawned from Word since everything happens in memory. How can we enhance our detections further?
 
-We know that Covenant is a .NET framework, so we can assume that it needs to loads some type of .NET DLLs at startup. Let's add the following to our Sysmon config:
+We know that Covenant is a .NET framework, so we can assume that it needs to load some type of .NET DLLs at startup.
+
+Let's add the following to our Sysmon config:
 
 ```xml
 <Rule groupRelation="and" name="Office .NET Abuse: Assembly DLLs">
@@ -281,7 +285,9 @@ We could also convert Sigma rules to Splunk searches programmatically with [this
 
 ### Bonus Round - [Velociraptor](https://github.com/Velocidex)
 
-Now that your cool new macro alerts have fired, you'd probably want to take a closer look at the host, let's try that with Velociraptor, we find our host, and collect some macro artifacts:
+Now that your cool new macro alerts have fired, you'd probably want to take a closer look at the host.
+
+Let's try that with Velociraptor, we find our host, and collect some macro artifacts:
 
 ![](2020-05-24-11-31-09.png)
 
