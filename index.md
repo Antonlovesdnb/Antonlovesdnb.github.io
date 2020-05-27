@@ -326,4 +326,4 @@ These resources / people helped me put this post together in one way or another:
 ](https://twitter.com/cyb3rops)
 * [https://twitter.com/Cyb3rWard0g](https://twitter.com/Cyb3rWard0g)
 * [https://github.com/hunters-forge](https://github.com/hunters-forge)
-* [https://twitter.com/SBousseaden] (https://twitter.com/SBousseaden)
+* [https://twitter.com/SBousseaden](https://twitter.com/SBousseaden)
