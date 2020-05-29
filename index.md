@@ -111,8 +111,8 @@ I came across this particular detection technique in [Samir](https://twitter.com
 [https://blog.menasec.net/2019/02/threat-hunting-doc-with-macro-invoking.html
 ](https://blog.menasec.net/2019/02/threat-hunting-doc-with-macro-invoking.html)
 
-> (If you are at all interested in Threat Hunting, I highly encourage you to check that blog out and give Samir a follow)
->
+_If you are at all interested in Threat Hunting, I highly encourage you to check that blog out and give Samir a follow_
+
 This rule will fire when the wbemdisp.dll is loaded by any executable within the Office16 folder, it can be tuned to be more specific as well.
 
 Here's what the data looks like in Splunk:
