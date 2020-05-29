@@ -197,11 +197,11 @@ Putting the pieces together a little bit, we're starting to get a good idea of w
 
 EvilClippy is a tool created by Outflank that provides functionality to stomp VBA code and hide macros from the Office GUI, you can grab the tool here:
 
-https://github.com/outflanknl/EvilClippy
+<https://github.com/outflanknl/EvilClippy>
 
 And read more about VBA Stomping here:
 
-https://vbastomp.com/
+<https://vbastomp.com/>
 
 I want to keep things super simple so I'm using the following "real" VBA code:
 
@@ -334,3 +334,4 @@ These resources / people helped me put this post together in one way or another:
 ](https://twitter.com/cyb3rops)
 * [https://twitter.com/Cyb3rWard0g](https://twitter.com/Cyb3rWard0g)
 * [https://github.com/hunters-forge](https://github.com/hunters-forge)
+* [https://twitter.com/SBousseaden](https://twitter.com/SBousseaden)
