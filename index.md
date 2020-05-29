@@ -105,6 +105,14 @@ If we observe Excel behaviour when launching normally versus launching a macro t
     <ImageLoaded condition="is">C:\Windows\SysWOW64\wbem\wbemdisp.dll</ImageLoaded>
 </Rule>
 ```
+
+I came across this particular detection technique in [Samir](https://twitter.com/SBousseaden)'s fantastic blog post:
+
+[https://blog.menasec.net/2019/02/threat-hunting-doc-with-macro-invoking.html
+](https://blog.menasec.net/2019/02/threat-hunting-doc-with-macro-invoking.html)
+
+> (If you are at all interested in Threat Hunting, I highly encourage you to check that blog out and give Samir a follow)
+>
 This rule will fire when the wbemdisp.dll is loaded by any executable within the Office16 folder, it can be tuned to be more specific as well.
 
 Here's what the data looks like in Splunk:
